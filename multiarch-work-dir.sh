@@ -15,7 +15,7 @@ docker buildx use container-builder
 export DOCKER_BUILDKIT=1
 
 echo "Create test Dockerfile"
-cat << EOF > ${HOME}/Dockerfile.working_dir
+cat << EOF > ${HOME}/Dockerfile
 FROM ubuntu:22.04
 
 RUN mkdir -p /other
@@ -50,7 +50,7 @@ function build_image() {
 		# TODO - refactor the image name out
 		# TODO - build-arg ARCH needed?
 		docker buildx build \
-			-f Dockerfile.working_dir \
+			-f Dockerfile \
 			-t "\${image}-\${arch}" \
 			--platform="\${arch}" \
 			--load \
