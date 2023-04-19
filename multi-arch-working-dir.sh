@@ -9,7 +9,7 @@ sudo apt-get install qemu-user-static
 
 echo "Configure buildx"
 docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-docker buildx create --driver-opt network=host --use --name container-builder
+docker buildx create --driver-opt network=host --use --name container-builder --platform linux/amd64,linux/s390x
 docker buildx inspect --bootstrap
 docker buildx use container-builder
 export DOCKER_BUILDKIT=1
@@ -45,7 +45,6 @@ supported_arches=(
 function build_image() {
 	arch_amends=()
 	local image="\${registry}"
-	docker buildx create --use --name multi-builder --platform linux/amd64,linux/s390x
 	for arch in \${supported_arches[@]}; do
 		echo "Building image \${image} for \${arch}"
 		# TODO - refactor the image name out
