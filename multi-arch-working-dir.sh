@@ -9,14 +9,14 @@ sudo apt-get install qemu-user-static
 
 echo "Configure buildx"
 docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-docker buildx create --driver-opt network=host --use --name container-builder --platform linux/amd64,linux/s390x
+docker buildx create --driver-opt network=host --use --name container-builder
 docker buildx inspect --bootstrap
 docker buildx use container-builder
 export DOCKER_BUILDKIT=1
 
 echo "Create test Dockerfile"
 cat << EOF > ${HOME}/Dockerfile.working_dir
-FROM --platform=$TARGETPLATFORM ubuntu:22.04
+FROM ubuntu:22.04
 
 RUN mkdir -p /other
 WORKDIR /other/
@@ -51,17 +51,17 @@ function build_image() {
 		# TODO - build-arg ARCH needed?
 		docker buildx build \
 			-f Dockerfile.working_dir \
-			-t "\${image}-\${arch}:\${arch}" \
+			-t "\${image}-\${arch}" \
 			--platform="\${arch}" \
 			--load \
 			.
-		docker push "\${image}-\${arch}:\${arch}"
-		arch_amends+=( --amend "\${image}-\${arch}:\${arch}")
+		docker push "\${image}-\${arch}"
+		arch_amends+=( --amend "\${image}-\${arch}")
 	done
-	docker images
+
 	docker manifest create \
 		\${image} \
-		\${arch_amends[@]}:\${arch_amends[@]}
+		\${arch_amends[@]}
 
 	docker manifest push --purge \${image}
 }
