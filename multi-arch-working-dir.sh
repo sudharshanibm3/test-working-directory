@@ -51,17 +51,17 @@ function build_image() {
 		# TODO - build-arg ARCH needed?
 		docker buildx build \
 			-f Dockerfile.working_dir \
-			-t "\${image}-\${arch}" \
+			-t "\${image}-\${arch}:\${arch}" \
 			--platform="\${arch}" \
 			--load \
 			.
-		docker push "\${image}-\${arch}"
-		arch_amends+=( --amend "\${image}-\${arch}")
+		docker push "\${image}-\${arch}:\${arch}"
+		arch_amends+=( --amend "\${image}-\${arch}:\${arch}")
 	done
 	docker images
 	docker manifest create \
 		\${image} \
-		\${arch_amends[@]}
+		\${arch_amends[@]}:\${arch_amends[@]}
 
 	docker manifest push --purge \${image}
 }
