@@ -45,6 +45,7 @@ supported_arches=(
 function build_image() {
 	arch_amends=()
 	local image="\${registry}"
+	docker buildx create --use --name multi-builder --platform linux/amd64,linux/s390x
 	for arch in \${supported_arches[@]}; do
 		echo "Building image \${image} for \${arch}"
 		# TODO - refactor the image name out
@@ -58,7 +59,7 @@ function build_image() {
 		docker push "\${image}-\${arch}"
 		arch_amends+=( --amend "\${image}-\${arch}")
 	done
-
+	docker images
 	docker manifest create \
 		\${image} \
 		\${arch_amends[@]}
