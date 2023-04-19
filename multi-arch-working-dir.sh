@@ -16,7 +16,7 @@ export DOCKER_BUILDKIT=1
 
 echo "Create test Dockerfile"
 cat << EOF > ${HOME}/Dockerfile.working_dir
-FROM ubuntu:22.04
+FROM --platform=$TARGETPLATFORM ubuntu:22.04
 
 RUN mkdir -p /other
 WORKDIR /other/
